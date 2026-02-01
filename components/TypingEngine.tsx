@@ -33,7 +33,7 @@ export default function TypingEngine() {
     }
   };
 
-  const handleContainerClick = () => {
+  const focusInput = () => {
     inputRef.current?.focus();
   };
 
@@ -54,7 +54,7 @@ export default function TypingEngine() {
       {/* Target text display with highlighting */}
       <div 
         ref={containerRef}
-        onClick={handleContainerClick}
+        onClick={focusInput}
         className="typing-display relative cursor-text rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:border-gray-300 transition-colors"
       >
         <div className="font-mono text-lg leading-relaxed tracking-wide">
