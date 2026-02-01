@@ -1,0 +1,13 @@
+{
+  "app": {
+    "title": "Digital Scribe",
+    "subtitle": "Improve your authoring skills through transcription"
+  },
+  "typing": {
+    "start": "Start Typing...",
+    "reset": "Reset",
+    "wpm": "WPM",
+    "accuracy": "Accuracy",
+    "progress": "Progress"
+  }
+}
