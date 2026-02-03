@@ -4,7 +4,8 @@ Multilingual transcription platform to enhance authoring skills and typing speed
 
 ## Screenshot
 
-![Digital Scribe Main Screen](public/screenshots/main.png)
+#![Digital Scribe Main Screen](public/screenshots/main.png)
+<img width="1277" height="873" alt="image" src="https://github.com/user-attachments/assets/00a3438d-28de-4e95-945d-fc64cb113aa3" />
 
 ## Features
 
