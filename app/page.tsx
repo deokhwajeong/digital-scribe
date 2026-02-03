@@ -157,7 +157,7 @@ export default function Home() {
                   {inputMode === 'file' && (
                     <div className="space-y-3">
                       <p className="text-sm text-gray-500">
-                        .txt, .md 파일을 업로드하여 타이핑 연습을 할 수 있습니다.
+                        .txt, .md, .xlsx, .csv 파일을 업로드하여 타이핑 연습을 할 수 있습니다.
                       </p>
                       <FileUploader />
                     </div>
