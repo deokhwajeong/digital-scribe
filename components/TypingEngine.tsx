@@ -17,6 +17,7 @@ export default function TypingEngine() {
   const cursorRef = useRef<HTMLSpanElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [showFullText, setShowFullText] = useState(false);
+  const [isComposing, setIsComposing] = useState(false);
 
   useEffect(() => {
     // Focus on mount
@@ -41,6 +42,9 @@ export default function TypingEngine() {
   }, [userInput.length]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    // Skip updates during IME composition to avoid partial character issues
+    if (isComposing) return;
+    
     const input = e.target.value;
     
     // Don't allow input longer than target text
@@ -48,6 +52,22 @@ export default function TypingEngine() {
       setUserInput(input);
       
       // Start timer on first input
+      if (input.length === 1) {
+        startTyping();
+      }
+    }
+  };
+
+  const handleCompositionStart = () => {
+    setIsComposing(true);
+  };
+
+  const handleCompositionEnd = (e: React.CompositionEvent<HTMLTextAreaElement>) => {
+    setIsComposing(false);
+    // Process the final composed input
+    const input = e.currentTarget.value;
+    if (input.length <= targetText.length) {
+      setUserInput(input);
       if (input.length === 1) {
         startTyping();
       }
@@ -180,6 +200,8 @@ export default function TypingEngine() {
         ref={inputRef}
         value={userInput}
         onChange={handleInputChange}
+        onCompositionStart={handleCompositionStart}
+        onCompositionEnd={handleCompositionEnd}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         className="sr-only"
