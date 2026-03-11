@@ -36,12 +36,15 @@ export const useTypingStore = create<TypingState>((set, get) => ({
   totalChars: 0,
 
   setUserInput: (input: string) => {
-    set({ userInput: input });
+    // Normalize to NFC to ensure consistent character comparison
+    set({ userInput: input.normalize('NFC') });
     get().calculateMetrics();
   },
 
   setTargetText: (text: string) => {
-    set({ targetText: text });
+    // Normalize to NFC to ensure consistent character comparison
+    // This is important for Korean text which can be stored in NFD or NFC form
+    set({ targetText: text.normalize('NFC') });
   },
 
   startTyping: () => {
