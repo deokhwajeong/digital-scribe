@@ -17,7 +17,6 @@ export default function TypingEngine() {
   const cursorRef = useRef<HTMLSpanElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [showFullText, setShowFullText] = useState(false);
-  const [isComposing, setIsComposing] = useState(false);
 
   useEffect(() => {
     // Focus on mount
@@ -41,39 +40,26 @@ export default function TypingEngine() {
     }
   }, [userInput.length]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const nativeEvent = e.nativeEvent as Event & { isComposing?: boolean };
+  const applyInput = (rawInput: string) => {
+    const nextInput = rawInput.slice(0, targetText.length);
+    setUserInput(nextInput);
 
-    // Skip updates during IME composition to avoid partial character issues
-    if (isComposing || nativeEvent.isComposing) return;
-    
-    const input = e.target.value;
-    
-    // Don't allow input longer than target text
-    if (input.length <= targetText.length) {
-      setUserInput(input);
-      
-      // Start timer on first input
-      if (userInput.length === 0 && input.length > 0) {
-        startTyping();
-      }
+    // Start timer once when typing begins
+    if (userInput.length === 0 && nextInput.length > 0) {
+      startTyping();
     }
   };
 
-  const handleCompositionStart = () => {
-    setIsComposing(true);
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    applyInput(e.currentTarget.value);
+  };
+
+  const handleInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
+    applyInput(e.currentTarget.value);
   };
 
   const handleCompositionEnd = (e: React.CompositionEvent<HTMLTextAreaElement>) => {
-    setIsComposing(false);
-    // Process the final composed input
-    const input = e.currentTarget.value;
-    if (input.length <= targetText.length) {
-      setUserInput(input);
-      if (userInput.length === 0 && input.length > 0) {
-        startTyping();
-      }
-    }
+    applyInput(e.currentTarget.value);
   };
 
   const focusInput = () => {
@@ -182,7 +168,7 @@ export default function TypingEngine() {
           ref={inputRef}
           value={userInput}
           onChange={handleInputChange}
-          onCompositionStart={handleCompositionStart}
+          onInput={handleInput}
           onCompositionEnd={handleCompositionEnd}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
