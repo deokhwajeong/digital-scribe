@@ -42,8 +42,10 @@ export default function TypingEngine() {
   }, [userInput.length]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const nativeEvent = e.nativeEvent as Event & { isComposing?: boolean };
+
     // Skip updates during IME composition to avoid partial character issues
-    if (isComposing) return;
+    if (isComposing || nativeEvent.isComposing) return;
     
     const input = e.target.value;
     
@@ -52,7 +54,7 @@ export default function TypingEngine() {
       setUserInput(input);
       
       // Start timer on first input
-      if (input.length === 1) {
+      if (userInput.length === 0 && input.length > 0) {
         startTyping();
       }
     }
@@ -68,7 +70,7 @@ export default function TypingEngine() {
     const input = e.currentTarget.value;
     if (input.length <= targetText.length) {
       setUserInput(input);
-      if (input.length === 1) {
+      if (userInput.length === 0 && input.length > 0) {
         startTyping();
       }
     }
@@ -153,6 +155,7 @@ export default function TypingEngine() {
       <div 
         ref={containerRef}
         onClick={focusInput}
+        onPointerDown={focusInput}
         className={`typing-display relative cursor-text rounded-xl border-2 bg-white p-6 transition-all duration-200 ${
           showFullText ? 'max-h-none' : 'max-h-80'
         } overflow-y-auto scroll-smooth ${
@@ -173,6 +176,25 @@ export default function TypingEngine() {
             </div>
           </div>
         )}
+
+        {/* Transparent input layer to make keyboard input reliable across browsers/IME */}
+        <textarea
+          ref={inputRef}
+          value={userInput}
+          onChange={handleInputChange}
+          onCompositionStart={handleCompositionStart}
+          onCompositionEnd={handleCompositionEnd}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          className="absolute inset-0 z-10 h-full w-full cursor-text resize-none bg-transparent text-transparent caret-transparent outline-none"
+          placeholder="Start typing..."
+          spellCheck={false}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          disabled={!targetText || isCompleted}
+          aria-label="Typing input"
+        />
       </div>
 
       {/* Show more/less toggle for long texts */}
@@ -194,23 +216,6 @@ export default function TypingEngine() {
           )}
         </button>
       )}
-
-      {/* Hidden textarea for input */}
-      <textarea
-        ref={inputRef}
-        value={userInput}
-        onChange={handleInputChange}
-        onCompositionStart={handleCompositionStart}
-        onCompositionEnd={handleCompositionEnd}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        className="sr-only"
-        placeholder="Start typing..."
-        spellCheck={false}
-        autoComplete="off"
-        autoCorrect="off"
-        autoCapitalize="off"
-      />
 
       {/* Instruction text */}
       <div className="text-center text-sm">
