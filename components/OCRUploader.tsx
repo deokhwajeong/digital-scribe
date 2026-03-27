@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import Image from 'next/image';
 import { Camera, ImageIcon, X, Loader2 } from 'lucide-react';
 import { useTypingStore } from '@/lib/store/typing-store';
 import Tesseract from 'tesseract.js';
@@ -113,11 +114,14 @@ export default function OCRUploader() {
       ) : (
         <div className="space-y-3">
           {/* Image Preview */}
-          <div className="relative rounded-lg border border-gray-200 overflow-hidden">
-            <img
+          <div className="relative h-64 rounded-lg border border-gray-200 overflow-hidden bg-gray-100">
+            <Image
               src={preview}
               alt="OCR Preview"
-              className="w-full max-h-64 object-contain bg-gray-100"
+              fill
+              unoptimized
+              className="object-contain"
+              sizes="100vw"
             />
             <button
               onClick={clearPreview}

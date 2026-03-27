@@ -1,17 +1,31 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useTypingStore } from '@/lib/store/typing-store';
 import { Zap, Target, TrendingUp, Clock } from 'lucide-react';
 
 export default function MetricsDisplay() {
   const { wpm, accuracy, userInput, targetText, startTime } = useTypingStore();
+  const [now, setNow] = useState<number>(() => Date.now());
+
+  useEffect(() => {
+    if (!startTime) return;
+
+    const timer = window.setInterval(() => {
+      setNow(Date.now());
+    }, 1000);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [startTime]);
   
   const progress = targetText.length > 0 
     ? Math.round((userInput.length / targetText.length) * 100)
     : 0;
 
   // Calculate elapsed time
-  const elapsedSeconds = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
+  const elapsedSeconds = startTime ? Math.floor((now - startTime) / 1000) : 0;
   const minutes = Math.floor(elapsedSeconds / 60);
   const seconds = elapsedSeconds % 60;
   const timeDisplay = `${minutes}:${seconds.toString().padStart(2, '0')}`;
