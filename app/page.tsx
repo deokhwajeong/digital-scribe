@@ -7,14 +7,17 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import ResetButton from '@/components/ResetButton';
 import FileUploader from '@/components/FileUploader';
 import OCRUploader from '@/components/OCRUploader';
+import KidsTypingGame from '@/components/KidsTypingGame';
 import { useTypingStore } from '@/lib/store/typing-store';
 import { texts } from '@/data/texts';
-import { BookOpen, Upload, Camera, ChevronDown, ChevronUp } from 'lucide-react';
+import { BookOpen, Upload, Camera, ChevronDown, ChevronUp, Gamepad2, PencilLine } from 'lucide-react';
 
 type InputMode = 'preset' | 'file' | 'ocr';
+type AppMode = 'classic' | 'kids';
 
 export default function Home() {
-  const { setTargetText, targetText } = useTypingStore();
+  const { setTargetText, targetText, reset } = useTypingStore();
+  const [appMode, setAppMode] = useState<AppMode>('classic');
   const [inputMode, setInputMode] = useState<InputMode>('preset');
   const [showInputOptions, setShowInputOptions] = useState(true);
 
@@ -32,6 +35,13 @@ export default function Home() {
       // Keep open for a bit, then allow collapse
     }
   }, [targetText]);
+
+  const switchAppMode = (mode: AppMode) => {
+    setAppMode(mode);
+    if (mode === 'kids') {
+      reset();
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
@@ -63,6 +73,37 @@ export default function Home() {
       {/* Main Content */}
       <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
         <div className="space-y-6">
+          <div className="rounded-2xl border border-gray-200 bg-white p-2 shadow-sm">
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => switchAppMode('classic')}
+                className={`flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
+                  appMode === 'classic'
+                    ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <PencilLine className="h-4 w-4" />
+                <span>일반 모드</span>
+              </button>
+              <button
+                onClick={() => switchAppMode('kids')}
+                className={`flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
+                  appMode === 'kids'
+                    ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <Gamepad2 className="h-4 w-4" />
+                <span>아이들 게임</span>
+              </button>
+            </div>
+          </div>
+
+          {appMode === 'kids' ? (
+            <KidsTypingGame />
+          ) : (
+            <>
           {/* Metrics */}
           <MetricsDisplay />
 
@@ -180,6 +221,8 @@ export default function Home() {
           <div className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
             <TypingEngine />
           </div>
+            </>
+          )}
         </div>
       </main>
 
