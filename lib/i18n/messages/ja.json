@@ -1,0 +1,89 @@
+{
+  "app": {
+    "title": "デジタルスクライブ",
+    "subtitle": "タイピングで文章力を伸ばしましょう",
+    "footer": "Digital Scribe - 継続練習でタイピング力を伸ばしましょう",
+    "modeClassic": "通常モード",
+    "modeKids": "キッズゲーム"
+  },
+  "language": {
+    "en": "English",
+    "ko": "한국어",
+    "ja": "日本語"
+  },
+  "metrics": {
+    "wpm": "WPM",
+    "wpmDesc": "単語/分",
+    "accuracy": "正確度",
+    "accuracyDesc": "正確に入力",
+    "progress": "進行率",
+    "progressDesc": "{typed}/{total} 文字",
+    "time": "時間",
+    "timeDesc": "経過時間"
+  },
+  "source": {
+    "title": "テキストソースを選択",
+    "preset": "サンプルテキスト",
+    "file": "ファイルアップロード",
+    "ocr": "OCR",
+    "fileHint": ".txt, .md, .xlsx, .csv ファイルをアップロードして練習できます。",
+    "ocrHint": "本のページや文書画像をアップロードすると自動認識します。"
+  },
+  "typing": {
+    "emptyTitle": "テキストを選択またはアップロードしてください",
+    "emptyHint": "ファイルアップロードまたは OCR 機能を使ってみてください",
+    "progress": "進行率",
+    "chars": "{typed} / {total} 文字",
+    "completed": "完了!",
+    "completedHint": "素晴らしいです! リセットしてもう一度始めましょう",
+    "showLess": "折りたたむ",
+    "showMore": "全文表示",
+    "placeholder": "入力開始...",
+    "ariaInput": "タイピング入力",
+    "instructionSelect": "上でテキストを選択してください",
+    "instructionStart": "上のテキストをクリックしてタイピングを始めてください",
+    "instructionFocus": "テキスト領域をクリックして入力を続けてください",
+    "instructionTyping": "入力中..."
+  },
+  "fileUploader": {
+    "unsupported": "未対応のファイル形式です。(.txt, .md, .xlsx, .xls, .csv のみ)",
+    "maxSize": "ファイルサイズは {size} 以下にしてください。",
+    "empty": "ファイルが空です。",
+    "readError": "ファイルの読み込み中にエラーが発生しました。",
+    "loading": "ファイルを読み込み中...",
+    "uploadLabel": "ファイルアップロード (.txt, .md, .xlsx, .csv)"
+  },
+  "ocr": {
+    "imageOnly": "画像ファイルのみアップロードできます。",
+    "maxSize": "画像サイズは 10MB 以下にしてください。",
+    "notFound": "画像からテキストを見つけられませんでした。別の画像を試してください。",
+    "processError": "OCR 処理中にエラーが発生しました。",
+    "uploadLabel": "本のページを撮影/アップロード (OCR)",
+    "previewAlt": "OCR プレビュー",
+    "language": "言語:",
+    "bilingual": "英語 + 韓国語",
+    "recognizing": "テキスト認識中... {progress}%",
+    "processing": "処理中...",
+    "extract": "テキストを抽出"
+  },
+  "reset": {
+    "button": "リセット"
+  },
+  "kids": {
+    "badge": "キッズゲームモード",
+    "title": "ことばチャレンジ",
+    "subtitle": "60秒でできるだけ多くの単語を当てましょう!",
+    "start": "ゲーム開始",
+    "pause": "一時停止",
+    "score": "スコア",
+    "streak": "連続",
+    "best": "最高",
+    "time": "時間",
+    "currentWord": "現在の単語",
+    "inputPlaying": "ここに単語を入力",
+    "inputIdle": "ゲーム開始を押してください",
+    "cleared": "正解単語: {count}",
+    "bonus": "ボーナス: 連続 {count}",
+    "result": "ゲーム終了! 合計 {score} 点"
+  }
+}

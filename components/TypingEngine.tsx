@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTypingStore } from '@/lib/store/typing-store';
 import { Keyboard, Eye, EyeOff } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/use-i18n';
 
 export default function TypingEngine() {
+  const { t } = useI18n();
   const {
     userInput,
     targetText,
@@ -89,8 +91,8 @@ export default function TypingEngine() {
       return (
         <div className="flex flex-col items-center justify-center py-12 text-gray-400">
           <Keyboard className="h-12 w-12 mb-3 opacity-50" />
-          <p className="text-lg">텍스트를 선택하거나 업로드하세요</p>
-          <p className="text-sm mt-1">파일 업로드 또는 OCR 기능을 사용해보세요</p>
+          <p className="text-lg">{t('typing.emptyTitle')}</p>
+          <p className="text-sm mt-1">{t('typing.emptyHint')}</p>
         </div>
       );
     }
@@ -121,9 +123,9 @@ export default function TypingEngine() {
       {targetText && (
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500">진행률</span>
+            <span className="text-gray-500">{t('typing.progress')}</span>
             <span className="font-medium text-gray-700">
-              {userInput.length} / {targetText.length} 글자
+              {t('typing.chars', { typed: userInput.length, total: targetText.length })}
             </span>
           </div>
           <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
@@ -157,8 +159,8 @@ export default function TypingEngine() {
           <div className="absolute inset-0 flex items-center justify-center bg-emerald-50/90 rounded-xl">
             <div className="text-center">
               <div className="text-5xl mb-3">🎉</div>
-              <p className="text-xl font-bold text-emerald-600">완료!</p>
-              <p className="text-sm text-emerald-500 mt-1">훌륭합니다! 리셋 버튼을 눌러 다시 시작하세요</p>
+              <p className="text-xl font-bold text-emerald-600">{t('typing.completed')}</p>
+              <p className="text-sm text-emerald-500 mt-1">{t('typing.completedHint')}</p>
             </div>
           </div>
         )}
@@ -173,13 +175,13 @@ export default function TypingEngine() {
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           className="absolute inset-0 z-10 h-full w-full cursor-text resize-none bg-transparent text-transparent caret-transparent outline-none"
-          placeholder="Start typing..."
+          placeholder={t('typing.placeholder')}
           spellCheck={false}
           autoComplete="off"
           autoCorrect="off"
           autoCapitalize="off"
           disabled={!targetText || isCompleted}
-          aria-label="Typing input"
+          aria-label={t('typing.ariaInput')}
         />
       </div>
 
@@ -192,12 +194,12 @@ export default function TypingEngine() {
           {showFullText ? (
             <>
               <EyeOff className="h-4 w-4" />
-              <span>접기</span>
+              <span>{t('typing.showLess')}</span>
             </>
           ) : (
             <>
               <Eye className="h-4 w-4" />
-              <span>전체 보기</span>
+              <span>{t('typing.showMore')}</span>
             </>
           )}
         </button>
@@ -206,18 +208,18 @@ export default function TypingEngine() {
       {/* Instruction text */}
       <div className="text-center text-sm">
         {!targetText ? (
-          <span className="text-gray-400">위에서 텍스트를 선택하세요</span>
+          <span className="text-gray-400">{t('typing.instructionSelect')}</span>
         ) : userInput.length === 0 ? (
           <span className="text-blue-500 animate-pulse">
-            👆 위 텍스트를 클릭하고 타이핑을 시작하세요
+            👆 {t('typing.instructionStart')}
           </span>
         ) : !isFocused ? (
           <span className="text-amber-500">
-            ⚠️ 텍스트 영역을 클릭하여 타이핑을 계속하세요
+            ⚠️ {t('typing.instructionFocus')}
           </span>
         ) : (
           <span className="text-gray-500">
-            타이핑 중...
+            {t('typing.instructionTyping')}
           </span>
         )}
       </div>

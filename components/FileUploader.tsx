@@ -3,10 +3,12 @@
 import { useRef, useState } from 'react';
 import { Upload, FileText, X, FileSpreadsheet } from 'lucide-react';
 import { useTypingStore } from '@/lib/store/typing-store';
+import { useI18n } from '@/lib/i18n/use-i18n';
 import * as XLSX from 'xlsx';
 
 export default function FileUploader() {
   const { setTargetText, reset } = useTypingStore();
+  const { t } = useI18n();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -72,13 +74,13 @@ export default function FileUploader() {
         excelExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
       
       if (!isTextFile && !isExcelFile) {
-        throw new Error('지원하지 않는 파일 형식입니다. (.txt, .md, .xlsx, .xls, .csv 파일만 가능)');
+        throw new Error(t('fileUploader.unsupported'));
       }
 
       // Check file size (max 5MB for excel, 1MB for text)
       const maxSize = isExcelFile ? 5 * 1024 * 1024 : 1024 * 1024;
       if (file.size > maxSize) {
-        throw new Error(`파일 크기는 ${isExcelFile ? '5MB' : '1MB'} 이하여야 합니다.`);
+        throw new Error(t('fileUploader.maxSize', { size: isExcelFile ? '5MB' : '1MB' }));
       }
 
       let text: string;
@@ -96,14 +98,14 @@ export default function FileUploader() {
         .trim();
 
       if (!cleanedText) {
-        throw new Error('파일이 비어 있습니다.');
+        throw new Error(t('fileUploader.empty'));
       }
 
       reset();
       setTargetText(cleanedText);
       setFileName(file.name);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '파일을 읽는 중 오류가 발생했습니다.');
+      setError(err instanceof Error ? err.message : t('fileUploader.readError'));
     } finally {
       setIsLoading(false);
       // Reset input
@@ -155,7 +157,7 @@ export default function FileUploader() {
         >
           <Upload className="h-5 w-5" />
           <span className="text-sm font-medium">
-            {isLoading ? '파일 읽는 중...' : '파일 업로드 (.txt, .md, .xlsx, .csv)'}
+            {isLoading ? t('fileUploader.loading') : t('fileUploader.uploadLabel')}
           </span>
         </button>
       )}

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Trophy, Flame, Timer, Star, Sparkles } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/use-i18n';
 
 const GAME_DURATION_SECONDS = 60;
 
@@ -38,6 +39,7 @@ const shuffle = (words: string[]) => {
 };
 
 export default function KidsTypingGame() {
+  const { t } = useI18n();
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState(GAME_DURATION_SECONDS);
   const [score, setScore] = useState(0);
@@ -128,10 +130,10 @@ export default function KidsTypingGame() {
         <div>
           <p className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 text-xs font-semibold tracking-wide text-orange-600">
             <Sparkles className="h-3.5 w-3.5" />
-            Kids Game Mode
+            {t('kids.badge')}
           </p>
-          <h2 className="mt-2 text-2xl font-black text-gray-900 sm:text-3xl">타닥타닥 단어 챌린지</h2>
-          <p className="mt-1 text-sm text-gray-600">60초 안에 단어를 많이 맞히면 승리해요!</p>
+          <h2 className="mt-2 text-2xl font-black text-gray-900 sm:text-3xl">{t('kids.title')}</h2>
+          <p className="mt-1 text-sm text-gray-600">{t('kids.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
           {!isPlaying ? (
@@ -139,14 +141,14 @@ export default function KidsTypingGame() {
               onClick={startGame}
               className="rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-orange-600"
             >
-              게임 시작
+              {t('kids.start')}
             </button>
           ) : (
             <button
               onClick={stopGame}
               className="rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-gray-700 shadow-sm transition hover:bg-gray-50"
             >
-              잠깐 멈추기
+              {t('kids.pause')}
             </button>
           )}
         </div>
@@ -156,28 +158,28 @@ export default function KidsTypingGame() {
         <div className="rounded-2xl bg-white/80 p-4 shadow-sm">
           <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
             <Trophy className="h-4 w-4 text-amber-500" />
-            Score
+            {t('kids.score')}
           </p>
           <p className="mt-2 text-3xl font-black text-amber-600">{score}</p>
         </div>
         <div className="rounded-2xl bg-white/80 p-4 shadow-sm">
           <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
             <Flame className="h-4 w-4 text-orange-500" />
-            Streak
+            {t('kids.streak')}
           </p>
           <p className={`mt-2 text-3xl font-black ${titleClass}`}>{streak}</p>
         </div>
         <div className="rounded-2xl bg-white/80 p-4 shadow-sm">
           <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
             <Star className="h-4 w-4 text-yellow-500" />
-            Best
+            {t('kids.best')}
           </p>
           <p className="mt-2 text-3xl font-black text-sky-600">{bestStreak}</p>
         </div>
         <div className="rounded-2xl bg-white/80 p-4 shadow-sm">
           <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
             <Timer className="h-4 w-4 text-rose-500" />
-            Time
+            {t('kids.time')}
           </p>
           <p className="mt-2 text-3xl font-black text-rose-600">{timeLeft}s</p>
         </div>
@@ -191,25 +193,25 @@ export default function KidsTypingGame() {
       </div>
 
       <div className="mt-6 rounded-2xl border border-white/70 bg-white/80 p-5 shadow-sm sm:p-7">
-        <p className="text-center text-sm font-semibold text-gray-500">현재 단어</p>
+        <p className="text-center text-sm font-semibold text-gray-500">{t('kids.currentWord')}</p>
         <p className="mt-2 text-center text-4xl font-black tracking-widest text-gray-900 sm:text-5xl">{currentWord || '-'}</p>
 
         <input
           value={input}
           disabled={!isPlaying || timeLeft <= 0}
           onChange={(e) => handleInputChange(e.currentTarget.value)}
-          placeholder={isPlaying ? '여기에 단어를 입력해요' : '게임 시작 버튼을 눌러주세요'}
+          placeholder={isPlaying ? t('kids.inputPlaying') : t('kids.inputIdle')}
           className="mt-5 w-full rounded-xl border-2 border-orange-200 bg-white px-4 py-3 text-center text-xl font-bold tracking-wide text-gray-900 outline-none transition focus:border-orange-400 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
         />
 
         <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
-          <p>맞힌 단어: {clearedWords}개</p>
-          <p>보너스: 연속 {streak}회</p>
+          <p>{t('kids.cleared', { count: clearedWords })}</p>
+          <p>{t('kids.bonus', { count: streak })}</p>
         </div>
 
         {!isPlaying && timeLeft <= 0 && (
           <p className="mt-4 text-center text-base font-bold text-emerald-600">
-            게임 종료! 총 점수 {score}점
+            {t('kids.result', { score })}
           </p>
         )}
       </div>

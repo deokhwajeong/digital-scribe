@@ -1,13 +1,89 @@
 {
   "app": {
     "title": "디지털 서기",
-    "subtitle": "필사를 통해 작문 능력을 향상시키세요"
+    "subtitle": "타이핑 연습으로 작문 실력을 향상시키세요",
+    "footer": "Digital Scribe - 꾸준한 연습으로 타이핑 실력을 향상시키세요",
+    "modeClassic": "일반 모드",
+    "modeKids": "아이들 게임"
+  },
+  "language": {
+    "en": "English",
+    "ko": "한국어",
+    "ja": "日本語"
+  },
+  "metrics": {
+    "wpm": "WPM",
+    "wpmDesc": "분당 단어",
+    "accuracy": "정확도",
+    "accuracyDesc": "정확한 입력",
+    "progress": "진행률",
+    "progressDesc": "{typed}/{total}자",
+    "time": "시간",
+    "timeDesc": "경과 시간"
+  },
+  "source": {
+    "title": "텍스트 소스 선택",
+    "preset": "샘플 텍스트",
+    "file": "파일 업로드",
+    "ocr": "OCR",
+    "fileHint": ".txt, .md, .xlsx, .csv 파일을 업로드하여 타이핑 연습을 할 수 있습니다.",
+    "ocrHint": "책 페이지나 문서 사진을 업로드하면 텍스트를 자동으로 인식합니다."
   },
   "typing": {
-    "start": "타이핑 시작...",
-    "reset": "재설정",
-    "wpm": "분당 타수",
-    "accuracy": "정확도",
-    "progress": "진행률"
+    "emptyTitle": "텍스트를 선택하거나 업로드하세요",
+    "emptyHint": "파일 업로드 또는 OCR 기능을 사용해보세요",
+    "progress": "진행률",
+    "chars": "{typed} / {total} 글자",
+    "completed": "완료!",
+    "completedHint": "훌륭합니다! 리셋 버튼을 눌러 다시 시작하세요",
+    "showLess": "접기",
+    "showMore": "전체 보기",
+    "placeholder": "타이핑 시작...",
+    "ariaInput": "타이핑 입력",
+    "instructionSelect": "위에서 텍스트를 선택하세요",
+    "instructionStart": "위 텍스트를 클릭하고 타이핑을 시작하세요",
+    "instructionFocus": "텍스트 영역을 클릭하여 타이핑을 계속하세요",
+    "instructionTyping": "타이핑 중..."
+  },
+  "fileUploader": {
+    "unsupported": "지원하지 않는 파일 형식입니다. (.txt, .md, .xlsx, .xls, .csv 파일만 가능)",
+    "maxSize": "파일 크기는 {size} 이하여야 합니다.",
+    "empty": "파일이 비어 있습니다.",
+    "readError": "파일을 읽는 중 오류가 발생했습니다.",
+    "loading": "파일 읽는 중...",
+    "uploadLabel": "파일 업로드 (.txt, .md, .xlsx, .csv)"
+  },
+  "ocr": {
+    "imageOnly": "이미지 파일만 업로드 가능합니다.",
+    "maxSize": "이미지 크기는 10MB 이하여야 합니다.",
+    "notFound": "이미지에서 텍스트를 찾을 수 없습니다. 다른 이미지를 시도해보세요.",
+    "processError": "OCR 처리 중 오류가 발생했습니다.",
+    "uploadLabel": "책 페이지 촬영/업로드 (OCR)",
+    "previewAlt": "OCR 미리보기",
+    "language": "언어:",
+    "bilingual": "영어 + 한국어",
+    "recognizing": "텍스트 인식 중... {progress}%",
+    "processing": "처리 중...",
+    "extract": "텍스트 추출하기"
+  },
+  "reset": {
+    "button": "리셋"
+  },
+  "kids": {
+    "badge": "아이들 게임 모드",
+    "title": "타닥타닥 단어 챌린지",
+    "subtitle": "60초 안에 단어를 많이 맞히면 승리해요!",
+    "start": "게임 시작",
+    "pause": "잠깐 멈추기",
+    "score": "점수",
+    "streak": "연속",
+    "best": "최고",
+    "time": "시간",
+    "currentWord": "현재 단어",
+    "inputPlaying": "여기에 단어를 입력해요",
+    "inputIdle": "게임 시작 버튼을 눌러주세요",
+    "cleared": "맞힌 단어: {count}",
+    "bonus": "보너스: 연속 {count}",
+    "result": "게임 종료! 총 점수 {score}점"
   }
 }
