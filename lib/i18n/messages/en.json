@@ -1,13 +1,89 @@
 {
   "app": {
     "title": "Digital Scribe",
-    "subtitle": "Improve your authoring skills through transcription"
+    "subtitle": "Improve your writing skills through typing practice",
+    "footer": "Digital Scribe - Improve your typing skills with steady practice",
+    "modeClassic": "Classic Mode",
+    "modeKids": "Kids Game"
+  },
+  "language": {
+    "en": "English",
+    "ko": "Korean",
+    "ja": "Japanese"
+  },
+  "metrics": {
+    "wpm": "WPM",
+    "wpmDesc": "Words per minute",
+    "accuracy": "Accuracy",
+    "accuracyDesc": "Correct input",
+    "progress": "Progress",
+    "progressDesc": "{typed}/{total} chars",
+    "time": "Time",
+    "timeDesc": "Elapsed"
+  },
+  "source": {
+    "title": "Choose Text Source",
+    "preset": "Sample Text",
+    "file": "Upload File",
+    "ocr": "OCR",
+    "fileHint": "Upload .txt, .md, .xlsx, or .csv files for typing practice.",
+    "ocrHint": "Upload a book or document image to extract text automatically."
   },
   "typing": {
-    "start": "Start Typing...",
-    "reset": "Reset",
-    "wpm": "WPM",
-    "accuracy": "Accuracy",
-    "progress": "Progress"
+    "emptyTitle": "Select or upload a text to begin",
+    "emptyHint": "Try file upload or OCR",
+    "progress": "Progress",
+    "chars": "{typed} / {total} chars",
+    "completed": "Completed!",
+    "completedHint": "Great work! Press reset to try again",
+    "showLess": "Show less",
+    "showMore": "Show full text",
+    "placeholder": "Start typing...",
+    "ariaInput": "Typing input",
+    "instructionSelect": "Choose a text from above",
+    "instructionStart": "Click the text area above and start typing",
+    "instructionFocus": "Click the text area to keep typing",
+    "instructionTyping": "Typing..."
+  },
+  "fileUploader": {
+    "unsupported": "Unsupported file format. Only .txt, .md, .xlsx, .xls, and .csv are allowed.",
+    "maxSize": "File size must be {size} or less.",
+    "empty": "The file is empty.",
+    "readError": "An error occurred while reading the file.",
+    "loading": "Reading file...",
+    "uploadLabel": "Upload file (.txt, .md, .xlsx, .csv)"
+  },
+  "ocr": {
+    "imageOnly": "Only image files can be uploaded.",
+    "maxSize": "Image size must be 10MB or less.",
+    "notFound": "No text was found in the image. Please try another image.",
+    "processError": "An error occurred while processing OCR.",
+    "uploadLabel": "Capture/Upload book page (OCR)",
+    "previewAlt": "OCR Preview",
+    "language": "Language:",
+    "bilingual": "English + Korean",
+    "recognizing": "Recognizing text... {progress}%",
+    "processing": "Processing...",
+    "extract": "Extract Text"
+  },
+  "reset": {
+    "button": "Reset"
+  },
+  "kids": {
+    "badge": "Kids Game Mode",
+    "title": "Word Sprint Challenge",
+    "subtitle": "Type as many words as you can in 60 seconds!",
+    "start": "Start Game",
+    "pause": "Pause",
+    "score": "Score",
+    "streak": "Streak",
+    "best": "Best",
+    "time": "Time",
+    "currentWord": "Current Word",
+    "inputPlaying": "Type the word here",
+    "inputIdle": "Press start game to begin",
+    "cleared": "Words cleared: {count}",
+    "bonus": "Bonus: streak {count}",
+    "result": "Game over! Total score {score}"
   }
 }

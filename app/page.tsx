@@ -9,6 +9,7 @@ import FileUploader from '@/components/FileUploader';
 import OCRUploader from '@/components/OCRUploader';
 import KidsTypingGame from '@/components/KidsTypingGame';
 import { useTypingStore } from '@/lib/store/typing-store';
+import { useI18n } from '@/lib/i18n/use-i18n';
 import { texts } from '@/data/texts';
 import { BookOpen, Upload, Camera, ChevronDown, ChevronUp, Gamepad2, PencilLine } from 'lucide-react';
 
@@ -16,6 +17,7 @@ type InputMode = 'preset' | 'file' | 'ocr';
 type AppMode = 'classic' | 'kids';
 
 export default function Home() {
+  const { locale, t } = useI18n();
   const { setTargetText, targetText, reset } = useTypingStore();
   const [appMode, setAppMode] = useState<AppMode>('classic');
   const [inputMode, setInputMode] = useState<InputMode>('preset');
@@ -23,11 +25,15 @@ export default function Home() {
 
   // Initialize with default text
   useEffect(() => {
-    const defaultText = texts.find(t => t.language === 'en');
+    const defaultText = texts.find((item) => item.language === locale) ?? texts.find((item) => item.language === 'en');
     if (defaultText) {
       setTargetText(defaultText.content);
     }
-  }, [setTargetText]);
+  }, [locale, setTargetText]);
+
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   // Auto-collapse input options when typing starts
   useEffect(() => {
@@ -55,10 +61,10 @@ export default function Home() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900">
-                  Digital Scribe
+                  {t('app.title')}
                 </h1>
                 <p className="text-xs text-gray-500">
-                  타이핑으로 작문 실력을 향상시키세요
+                  {t('app.subtitle')}
                 </p>
               </div>
             </div>
@@ -84,7 +90,7 @@ export default function Home() {
                 }`}
               >
                 <PencilLine className="h-4 w-4" />
-                <span>일반 모드</span>
+                <span>{t('app.modeClassic')}</span>
               </button>
               <button
                 onClick={() => switchAppMode('kids')}
@@ -95,7 +101,7 @@ export default function Home() {
                 }`}
               >
                 <Gamepad2 className="h-4 w-4" />
-                <span>아이들 게임</span>
+                <span>{t('app.modeKids')}</span>
               </button>
             </div>
           </div>
@@ -113,7 +119,7 @@ export default function Home() {
               onClick={() => setShowInputOptions(!showInputOptions)}
               className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-gray-50 transition-colors"
             >
-              <span className="font-medium text-gray-700">📝 텍스트 소스 선택</span>
+              <span className="font-medium text-gray-700">📝 {t('source.title')}</span>
               {showInputOptions ? (
                 <ChevronUp className="h-5 w-5 text-gray-400" />
               ) : (
@@ -134,7 +140,7 @@ export default function Home() {
                     }`}
                   >
                     <BookOpen className="h-4 w-4" />
-                    <span>샘플 텍스트</span>
+                    <span>{t('source.preset')}</span>
                   </button>
                   <button
                     onClick={() => setInputMode('file')}
@@ -145,7 +151,7 @@ export default function Home() {
                     }`}
                   >
                     <Upload className="h-4 w-4" />
-                    <span>파일 업로드</span>
+                    <span>{t('source.file')}</span>
                   </button>
                   <button
                     onClick={() => setInputMode('ocr')}
@@ -156,7 +162,7 @@ export default function Home() {
                     }`}
                   >
                     <Camera className="h-4 w-4" />
-                    <span>OCR</span>
+                    <span>{t('source.ocr')}</span>
                   </button>
                 </div>
 
@@ -164,7 +170,10 @@ export default function Home() {
                 <div className="pt-2">
                   {inputMode === 'preset' && (
                     <div className="grid gap-3 sm:grid-cols-2">
-                      {texts.map((text) => (
+                      {(texts.filter((text) => text.language === locale).length > 0
+                        ? texts.filter((text) => text.language === locale)
+                        : texts.filter((text) => text.language === 'en'))
+                        .map((text) => (
                         <button
                           key={text.id}
                           onClick={() => setTargetText(text.content)}
@@ -182,9 +191,11 @@ export default function Home() {
                             <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                               text.language === 'en' 
                                 ? 'bg-blue-100 text-blue-700' 
-                                : 'bg-purple-100 text-purple-700'
+                                : text.language === 'ko'
+                                  ? 'bg-purple-100 text-purple-700'
+                                  : 'bg-orange-100 text-orange-700'
                             }`}>
-                              {text.language === 'en' ? 'EN' : 'KO'}
+                              {text.language.toUpperCase()}
                             </span>
                           </div>
                           <p className="mt-2 text-sm text-gray-600 line-clamp-2">
@@ -198,7 +209,7 @@ export default function Home() {
                   {inputMode === 'file' && (
                     <div className="space-y-3">
                       <p className="text-sm text-gray-500">
-                        .txt, .md, .xlsx, .csv 파일을 업로드하여 타이핑 연습을 할 수 있습니다.
+                        {t('source.fileHint')}
                       </p>
                       <FileUploader />
                     </div>
@@ -207,7 +218,7 @@ export default function Home() {
                   {inputMode === 'ocr' && (
                     <div className="space-y-3">
                       <p className="text-sm text-gray-500">
-                        책 페이지나 문서 사진을 업로드하면 텍스트를 자동으로 인식합니다.
+                        {t('source.ocrHint')}
                       </p>
                       <OCRUploader />
                     </div>
@@ -230,7 +241,7 @@ export default function Home() {
       <footer className="mt-12 border-t border-gray-200 bg-white">
         <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
           <p className="text-center text-sm text-gray-400">
-            Digital Scribe — 꾸준한 연습으로 타이핑 실력을 향상시키세요
+            {t('app.footer')}
           </p>
         </div>
       </footer>

@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useTypingStore } from '@/lib/store/typing-store';
 import { Zap, Target, TrendingUp, Clock } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/use-i18n';
 
 export default function MetricsDisplay() {
   const { wpm, accuracy, userInput, targetText, startTime } = useTypingStore();
+  const { t } = useI18n();
   const [now, setNow] = useState<number>(() => Date.now());
 
   useEffect(() => {
@@ -52,37 +54,37 @@ export default function MetricsDisplay() {
       <div className="group rounded-xl border border-gray-100 bg-gradient-to-br from-white to-gray-50 p-4 shadow-sm transition-all hover:shadow-md hover:border-blue-200">
         <div className="flex items-center gap-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
           <Zap className="h-3.5 w-3.5 text-blue-500" />
-          <span>WPM</span>
+          <span>{t('metrics.wpm')}</span>
         </div>
         <div className={`mt-2 text-3xl font-bold tabular-nums ${getWpmColor()}`}>
           {wpm}
         </div>
-        <div className="mt-1 text-xs text-gray-400">분당 단어</div>
+        <div className="mt-1 text-xs text-gray-400">{t('metrics.wpmDesc')}</div>
       </div>
 
       {/* Accuracy */}
       <div className="group rounded-xl border border-gray-100 bg-gradient-to-br from-white to-gray-50 p-4 shadow-sm transition-all hover:shadow-md hover:border-emerald-200">
         <div className="flex items-center gap-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
           <Target className="h-3.5 w-3.5 text-emerald-500" />
-          <span>정확도</span>
+          <span>{t('metrics.accuracy')}</span>
         </div>
         <div className={`mt-2 text-3xl font-bold tabular-nums ${getAccuracyColor()}`}>
           {accuracy}<span className="text-lg">%</span>
         </div>
-        <div className="mt-1 text-xs text-gray-400">정확한 입력</div>
+        <div className="mt-1 text-xs text-gray-400">{t('metrics.accuracyDesc')}</div>
       </div>
 
       {/* Progress */}
       <div className="group rounded-xl border border-gray-100 bg-gradient-to-br from-white to-gray-50 p-4 shadow-sm transition-all hover:shadow-md hover:border-purple-200">
         <div className="flex items-center gap-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
           <TrendingUp className="h-3.5 w-3.5 text-purple-500" />
-          <span>진행률</span>
+          <span>{t('metrics.progress')}</span>
         </div>
         <div className="mt-2 text-3xl font-bold tabular-nums text-purple-600">
           {progress}<span className="text-lg">%</span>
         </div>
         <div className="mt-1 text-xs text-gray-400">
-          {userInput.length}/{targetText.length}자
+          {t('metrics.progressDesc', { typed: userInput.length, total: targetText.length })}
         </div>
       </div>
 
@@ -90,12 +92,12 @@ export default function MetricsDisplay() {
       <div className="group rounded-xl border border-gray-100 bg-gradient-to-br from-white to-gray-50 p-4 shadow-sm transition-all hover:shadow-md hover:border-amber-200">
         <div className="flex items-center gap-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
           <Clock className="h-3.5 w-3.5 text-amber-500" />
-          <span>시간</span>
+          <span>{t('metrics.time')}</span>
         </div>
         <div className="mt-2 text-3xl font-bold tabular-nums text-amber-600">
           {timeDisplay}
         </div>
-        <div className="mt-1 text-xs text-gray-400">경과 시간</div>
+        <div className="mt-1 text-xs text-gray-400">{t('metrics.timeDesc')}</div>
       </div>
     </div>
   );
