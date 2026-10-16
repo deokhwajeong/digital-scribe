@@ -1,11 +1,23 @@
 /** Text cleanup helpers shared by the file and OCR sources. */
 
+// Japanese script plus CJK punctuation and full-width forms. Hangul is left
+// out on purpose: Korean uses spaces between words.
+const JA = '[\\p{Script=Han}\\p{Script=Hiragana}\\p{Script=Katakana}\\u3000-\\u303f\\u30fc\\uff00-\\uffef]';
+const JA_GAP_RE = new RegExp(`(?<=${JA}) +(?=${JA})`, 'gu');
+
+/**
+ * Tesseract separates Japanese characters with spaces ("駅 の ホー ム"),
+ * which would turn every gap into a character to type. Remove spaces that
+ * sit between two Japanese characters; Latin and Korean spacing is kept.
+ */
+export const removeJapaneseGaps = (text: string): string => text.replace(JA_GAP_RE, '');
+
 /** Collapse OCR line wraps into flowing text while keeping paragraph breaks. */
 export const cleanOcrText = (raw: string): string =>
   raw
     .replace(/\r\n?/g, '\n')
     .split(/\n\s*\n/)
-    .map((paragraph) => paragraph.replace(/\s+/g, ' ').trim())
+    .map((paragraph) => removeJapaneseGaps(paragraph.replace(/\s+/g, ' ').trim()))
     .filter(Boolean)
     .join('\n');
 

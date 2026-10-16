@@ -28,7 +28,7 @@
     "preset": "샘플 텍스트",
     "file": "파일 업로드",
     "ocr": "OCR",
-    "fileHint": ".txt, .md, .xlsx, .csv 파일을 업로드하여 타이핑 연습을 할 수 있습니다.",
+    "fileHint": ".txt, .md, .json, .xlsx, .csv 파일을 업로드하여 타이핑 연습을 할 수 있습니다.",
     "ocrHint": "책 페이지나 문서 사진을 업로드하면 텍스트를 자동으로 인식합니다."
   },
   "typing": {
@@ -37,7 +37,7 @@
     "progress": "진행률",
     "chars": "{typed} / {total} 글자",
     "completed": "완료!",
-    "completedHint": "훌륭합니다! 리셋 버튼을 눌러 다시 시작하세요",
+    "completedHint": "수고하셨습니다! 아래에서 결과와 오타 지도를 확인하세요.",
     "showLess": "접기",
     "showMore": "전체 보기",
     "placeholder": "타이핑 시작...",
@@ -53,7 +53,7 @@
     "empty": "파일이 비어 있습니다.",
     "readError": "파일을 읽는 중 오류가 발생했습니다.",
     "loading": "파일 읽는 중...",
-    "uploadLabel": "파일 업로드 (.txt, .md, .xlsx, .csv)",
+    "uploadLabel": "파일 업로드 (.txt, .md, .json, .xlsx, .csv)",
     "clear": "파일 지우기"
   },
   "ocr": {
@@ -72,7 +72,8 @@
     "sampleHint": "데모: 내장된 페이지는 미리 계산된 OCR 결과를 사용하므로 업로드나 다운로드가 없습니다.",
     "sampleDone": "샘플 페이지 인식 완료 (미리 계산된 결과). 아래에서 타이핑을 시작하세요.",
     "done": "텍스트 추출 완료. 아래에서 타이핑을 시작하세요.",
-    "clear": "이미지 제거"
+    "clear": "이미지 제거",
+    "engineHint": "기기 안에서 실행됩니다. 처음 실행할 때 OCR 엔진과 언어 데이터(수 MB)를 이 사이트에서 불러오며, 이미지는 업로드되지 않습니다."
   },
   "reset": {
     "button": "리셋"
@@ -96,5 +97,36 @@
   },
   "demo": {
     "banner": "데모 모드: 샘플 문장, 브라우저에서만 실행됩니다"
+  },
+  "results": {
+    "accuracy": "정확도",
+    "firstTry": "첫 시도 정확도",
+    "mistakes": "오타 수",
+    "time": "시간",
+    "again": "다시 하기",
+    "savedHint": "진행 기록에 저장되었습니다.",
+    "newBest": "개인 최고 기록 경신 (이전 {previous} {unit})",
+    "heatmapTitle": "오타가 난 위치",
+    "legendNone": "오타:",
+    "cellTitle": "이 위치 오타 {count}회",
+    "noMistakes": "오타 없이 완주했습니다!",
+    "topMissed": "자주 틀린 글자: {list}"
+  },
+  "history": {
+    "title": "나의 진행 기록",
+    "languageFilter": "기록 언어",
+    "empty": "문장을 끝까지 입력하면 기록이 시작됩니다. 매 회차의 속도와 정확도가 이 브라우저에 저장됩니다.",
+    "sessions": "회차",
+    "best": "최고 {unit}",
+    "recent": "최근 5회 평균 {unit}",
+    "recentAccuracy": "최근 5회 평균 정확도",
+    "speedChart": "속도 ({unit})",
+    "accuracyChart": "정확도 (%)",
+    "table": "최근 기록",
+    "colDate": "날짜",
+    "colPassage": "문장",
+    "storedLocally": "이 브라우저에만 저장됩니다.",
+    "clear": "기록 삭제",
+    "clearConfirm": "모든 언어의 저장된 기록을 삭제할까요?"
   }
 }

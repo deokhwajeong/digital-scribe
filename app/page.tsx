@@ -12,6 +12,8 @@ import { useTypingStore } from '@/lib/store/typing-store';
 import { useI18n } from '@/lib/i18n/use-i18n';
 import { textsFor } from '@/data/texts';
 import DemoBanner from '@/components/DemoBanner';
+import SessionResults from '@/components/SessionResults';
+import ProgressPanel from '@/components/ProgressPanel';
 import { BookOpen, Upload, Camera, ChevronDown, ChevronUp, Gamepad2, PencilLine } from 'lucide-react';
 
 type InputMode = 'preset' | 'file' | 'ocr';
@@ -40,12 +42,12 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
       <DemoBanner />
       {/* Header */}
-      <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
+      <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
         <div className="mx-auto max-w-5xl px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-200">
-                <BookOpen className="h-5 w-5" />
+                <BookOpen className="h-5 w-5" aria-hidden="true" />
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900">
@@ -71,24 +73,26 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => switchAppMode('classic')}
+                aria-pressed={appMode === 'classic'}
                 className={`flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
                   appMode === 'classic'
                     ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <PencilLine className="h-4 w-4" />
+                <PencilLine className="h-4 w-4" aria-hidden="true" />
                 <span>{t('app.modeClassic')}</span>
               </button>
               <button
                 onClick={() => switchAppMode('kids')}
+                aria-pressed={appMode === 'kids'}
                 className={`flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
                   appMode === 'kids'
                     ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <Gamepad2 className="h-4 w-4" />
+                <Gamepad2 className="h-4 w-4" aria-hidden="true" />
                 <span>{t('app.modeKids')}</span>
               </button>
             </div>
@@ -108,11 +112,11 @@ export default function Home() {
               aria-expanded={showInputOptions}
               className="w-full flex items-center justify-between px-4 sm:px-6 py-4 text-left hover:bg-gray-50 transition-colors"
             >
-              <span className="font-medium text-gray-700">📝 {t('source.title')}</span>
+              <span className="font-medium text-gray-700">{t('source.title')}</span>
               {showInputOptions ? (
-                <ChevronUp className="h-5 w-5 text-gray-400" />
+                <ChevronUp className="h-5 w-5 text-gray-400" aria-hidden="true" />
               ) : (
-                <ChevronDown className="h-5 w-5 text-gray-400" />
+                <ChevronDown className="h-5 w-5 text-gray-400" aria-hidden="true" />
               )}
             </button>
             
@@ -122,35 +126,38 @@ export default function Home() {
                 <div className="flex gap-2 p-1 bg-gray-100 rounded-lg">
                   <button
                     onClick={() => setInputMode('preset')}
+                    aria-pressed={inputMode === 'preset'}
                     className={`flex-1 flex items-center justify-center gap-1.5 px-2 sm:px-4 py-2.5 rounded-md text-sm font-medium transition-all ${
                       inputMode === 'preset'
                         ? 'bg-white text-gray-900 shadow-sm'
                         : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
-                    <BookOpen className="hidden h-4 w-4 sm:block" />
+                    <BookOpen className="hidden h-4 w-4 sm:block" aria-hidden="true" />
                     <span>{t('source.preset')}</span>
                   </button>
                   <button
                     onClick={() => setInputMode('file')}
+                    aria-pressed={inputMode === 'file'}
                     className={`flex-1 flex items-center justify-center gap-1.5 px-2 sm:px-4 py-2.5 rounded-md text-sm font-medium transition-all ${
                       inputMode === 'file'
                         ? 'bg-white text-gray-900 shadow-sm'
                         : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
-                    <Upload className="hidden h-4 w-4 sm:block" />
+                    <Upload className="hidden h-4 w-4 sm:block" aria-hidden="true" />
                     <span>{t('source.file')}</span>
                   </button>
                   <button
                     onClick={() => setInputMode('ocr')}
+                    aria-pressed={inputMode === 'ocr'}
                     className={`flex-1 flex items-center justify-center gap-1.5 px-2 sm:px-4 py-2.5 rounded-md text-sm font-medium transition-all ${
                       inputMode === 'ocr'
                         ? 'bg-white text-gray-900 shadow-sm'
                         : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
-                    <Camera className="hidden h-4 w-4 sm:block" />
+                    <Camera className="hidden h-4 w-4 sm:block" aria-hidden="true" />
                     <span>{t('source.ocr')}</span>
                   </button>
                 </div>
@@ -163,6 +170,7 @@ export default function Home() {
                         <button
                           key={text.id}
                           onClick={() => setTargetText(text.content)}
+                          aria-pressed={targetText === text.content}
                           className={`text-left p-4 rounded-xl border-2 transition-all hover:shadow-md ${
                             targetText === text.content
                               ? 'border-blue-500 bg-blue-50'
@@ -218,6 +226,9 @@ export default function Home() {
           <div className="rounded-2xl bg-white p-4 sm:p-6 shadow-sm border border-gray-100">
             <TypingEngine />
           </div>
+
+          <SessionResults />
+          <ProgressPanel />
             </>
           )}
         </div>

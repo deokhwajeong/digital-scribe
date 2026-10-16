@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# self-hosted OCR assets, copied from node_modules at build time
+/public/tesseract/

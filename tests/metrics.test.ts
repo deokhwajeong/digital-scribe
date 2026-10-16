@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  languageOf,
   clampToTarget,
   compareChars,
   computeAccuracy,
@@ -113,5 +114,14 @@ describe('formatElapsed', () => {
   it('formats m:ss and never goes negative', () => {
     expect(formatElapsed(65_000)).toBe('1:05');
     expect(formatElapsed(-500)).toBe('0:00');
+  });
+});
+
+describe('languageOf', () => {
+  it('detects Korean, Japanese, and Latin passages', () => {
+    expect(languageOf('첫눈 오는 저녁')).toBe('ko');
+    expect(languageOf('小さな駅のホーム')).toBe('ja');
+    expect(languageOf('Hello, world')).toBe('en');
+    expect(languageOf('')).toBe('en');
   });
 });

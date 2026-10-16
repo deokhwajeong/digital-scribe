@@ -28,7 +28,7 @@
     "preset": "Sample Text",
     "file": "Upload File",
     "ocr": "OCR",
-    "fileHint": "Upload .txt, .md, .xlsx, or .csv files for typing practice.",
+    "fileHint": "Upload .txt, .md, .json, .xlsx, or .csv files for typing practice.",
     "ocrHint": "Upload a book or document image to extract text automatically."
   },
   "typing": {
@@ -37,7 +37,7 @@
     "progress": "Progress",
     "chars": "{typed} / {total} chars",
     "completed": "Completed!",
-    "completedHint": "Great work! Press reset to try again",
+    "completedHint": "Great work! Your results and mistake heatmap are below.",
     "showLess": "Show less",
     "showMore": "Show full text",
     "placeholder": "Start typing...",
@@ -53,7 +53,7 @@
     "empty": "The file is empty.",
     "readError": "An error occurred while reading the file.",
     "loading": "Reading file...",
-    "uploadLabel": "Upload file (.txt, .md, .xlsx, .csv)",
+    "uploadLabel": "Upload file (.txt, .md, .json, .xlsx, .csv)",
     "clear": "Clear file"
   },
   "ocr": {
@@ -72,7 +72,8 @@
     "sampleHint": "Demo: this bundled page uses a precomputed OCR result, so nothing is uploaded or downloaded.",
     "sampleDone": "Sample page recognized (precomputed result). Start typing below.",
     "done": "Text extracted. Start typing below.",
-    "clear": "Remove image"
+    "clear": "Remove image",
+    "engineHint": "Runs on your device. The first run loads the OCR engine and language data (a few MB) from this site; nothing is uploaded."
   },
   "reset": {
     "button": "Reset"
@@ -96,5 +97,36 @@
   },
   "demo": {
     "banner": "Demo mode: sample passages, runs in your browser"
+  },
+  "results": {
+    "accuracy": "Accuracy",
+    "firstTry": "First try",
+    "mistakes": "Mistakes",
+    "time": "Time",
+    "again": "Try again",
+    "savedHint": "Saved to your progress history.",
+    "newBest": "New personal best (previous {previous} {unit})",
+    "heatmapTitle": "Where the mistakes were",
+    "legendNone": "Mistakes:",
+    "cellTitle": "{count} mistake(s) here",
+    "noMistakes": "No mistakes at all. Clean run!",
+    "topMissed": "Most missed: {list}"
+  },
+  "history": {
+    "title": "Your progress",
+    "languageFilter": "Show history for",
+    "empty": "Finish a passage to start your history. Speed and accuracy for every run are saved in this browser.",
+    "sessions": "Sessions",
+    "best": "Best {unit}",
+    "recent": "Last 5 avg {unit}",
+    "recentAccuracy": "Last 5 avg accuracy",
+    "speedChart": "Speed ({unit})",
+    "accuracyChart": "Accuracy (%)",
+    "table": "Recent sessions",
+    "colDate": "Date",
+    "colPassage": "Passage",
+    "storedLocally": "Stored only in this browser.",
+    "clear": "Clear history",
+    "clearConfirm": "Delete all saved sessions in every language?"
   }
 }

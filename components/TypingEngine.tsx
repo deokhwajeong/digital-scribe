@@ -88,7 +88,7 @@ export default function TypingEngine() {
     if (!targetText) {
       return (
         <div className="flex flex-col items-center justify-center py-12 text-gray-400">
-          <Keyboard className="h-12 w-12 mb-3 opacity-50" />
+          <Keyboard className="h-12 w-12 mb-3 opacity-50" aria-hidden="true" />
           <p className="text-lg">{t('typing.emptyTitle')}</p>
           <p className="text-sm mt-1">{t('typing.emptyHint')}</p>
         </div>
@@ -126,7 +126,14 @@ export default function TypingEngine() {
               {t('typing.chars', { typed: typedChars.length, total: targetChars.length })}
             </span>
           </div>
-          <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+          <div
+            className="h-2 w-full rounded-full bg-gray-100 overflow-hidden"
+            role="progressbar"
+            aria-label={t('typing.progress')}
+            aria-valuemin={0}
+            aria-valuemax={targetChars.length}
+            aria-valuenow={typedChars.length}
+          >
             <div
               className={`h-full transition-all duration-300 ${
                 isCompleted ? 'bg-emerald-500' : 'bg-blue-500'
@@ -152,14 +159,11 @@ export default function TypingEngine() {
       >
         {renderText()}
         
-        {/* Completion overlay */}
+        {/* Completion badge: the results card below holds the details, so the
+            passage stays visible instead of being covered by an overlay. */}
         {isCompleted && (
-          <div className="absolute inset-0 flex items-center justify-center bg-emerald-50/90 rounded-xl">
-            <div className="text-center">
-              <div className="text-5xl mb-3">🎉</div>
-              <p className="text-xl font-bold text-emerald-600">{t('typing.completed')}</p>
-              <p className="text-sm text-emerald-500 mt-1">{t('typing.completedHint')}</p>
-            </div>
+          <div className="pointer-events-none absolute right-3 top-3 z-20 rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white shadow">
+            {t('typing.completed')}
           </div>
         )}
 
@@ -205,9 +209,11 @@ export default function TypingEngine() {
       )}
 
       {/* Instruction text */}
-      <div className="text-center text-sm">
+      <div className="text-center text-sm" aria-live="polite">
         {!targetText ? (
           <span className="text-gray-400">{t('typing.instructionSelect')}</span>
+        ) : isCompleted ? (
+          <span className="text-emerald-700">{t('typing.completedHint')}</span>
         ) : typedChars.length === 0 ? (
           <span className="text-blue-500 animate-pulse">
             👆 {t('typing.instructionStart')}

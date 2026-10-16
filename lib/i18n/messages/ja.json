@@ -28,7 +28,7 @@
     "preset": "サンプルテキスト",
     "file": "ファイルアップロード",
     "ocr": "OCR",
-    "fileHint": ".txt, .md, .xlsx, .csv ファイルをアップロードして練習できます。",
+    "fileHint": ".txt, .md, .json, .xlsx, .csv ファイルをアップロードして練習できます。",
     "ocrHint": "本のページや文書画像をアップロードすると自動認識します。"
   },
   "typing": {
@@ -37,7 +37,7 @@
     "progress": "進行率",
     "chars": "{typed} / {total} 文字",
     "completed": "完了!",
-    "completedHint": "素晴らしいです! リセットしてもう一度始めましょう",
+    "completedHint": "お疲れさまでした! 結果とミスの位置は下に表示されています。",
     "showLess": "折りたたむ",
     "showMore": "全文表示",
     "placeholder": "入力開始...",
@@ -53,7 +53,7 @@
     "empty": "ファイルが空です。",
     "readError": "ファイルの読み込み中にエラーが発生しました。",
     "loading": "ファイルを読み込み中...",
-    "uploadLabel": "ファイルアップロード (.txt, .md, .xlsx, .csv)",
+    "uploadLabel": "ファイルアップロード (.txt, .md, .json, .xlsx, .csv)",
     "clear": "ファイルをクリア"
   },
   "ocr": {
@@ -72,7 +72,8 @@
     "sampleHint": "デモ: 同梱ページは事前計算済みのOCR結果を使うため、アップロードやダウンロードは発生しません。",
     "sampleDone": "サンプルページを認識しました (事前計算済み)。下で入力を始めましょう。",
     "done": "テキストを抽出しました。下で入力を始めましょう。",
-    "clear": "画像を削除"
+    "clear": "画像を削除",
+    "engineHint": "端末内で実行されます。初回はOCRエンジンと言語データ(数MB)をこのサイトから読み込みます。画像はアップロードされません。"
   },
   "reset": {
     "button": "リセット"
@@ -96,5 +97,36 @@
   },
   "demo": {
     "banner": "デモモード: サンプル文章、ブラウザ内で動作します"
+  },
+  "results": {
+    "accuracy": "正確さ",
+    "firstTry": "一発正解率",
+    "mistakes": "ミス数",
+    "time": "時間",
+    "again": "もう一度",
+    "savedHint": "記録に保存しました。",
+    "newBest": "自己ベスト更新 (前回 {previous} {unit})",
+    "heatmapTitle": "ミスの位置",
+    "legendNone": "ミス:",
+    "cellTitle": "ここで{count}回ミス",
+    "noMistakes": "ノーミスで完走しました!",
+    "topMissed": "よく間違えた文字: {list}"
+  },
+  "history": {
+    "title": "あなたの記録",
+    "languageFilter": "表示する言語",
+    "empty": "文章を最後まで入力すると記録が始まります。毎回の速度と正確さはこのブラウザに保存されます。",
+    "sessions": "回数",
+    "best": "最高 {unit}",
+    "recent": "直近5回平均 {unit}",
+    "recentAccuracy": "直近5回平均の正確さ",
+    "speedChart": "速度 ({unit})",
+    "accuracyChart": "正確さ (%)",
+    "table": "最近の記録",
+    "colDate": "日時",
+    "colPassage": "文章",
+    "storedLocally": "このブラウザにのみ保存されます。",
+    "clear": "記録を削除",
+    "clearConfirm": "すべての言語の記録を削除しますか?"
   }
 }

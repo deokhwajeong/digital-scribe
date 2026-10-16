@@ -7,6 +7,12 @@ describe('cleanOcrText', () => {
     expect(cleanOcrText(raw)).toBe('The keeper kept two notebooks.\nIn the first he wrote the weather.');
   });
 
+  it('removes OCR gaps between Japanese characters only', () => {
+    expect(cleanOcrText('小さ な 駅 の ホー ム に 、 夕 方 の 雨 が')).toBe('小さな駅のホームに、夕方の雨が');
+    expect(cleanOcrText('창밖으로 은행잎이 떨어진다.')).toBe('창밖으로 은행잎이 떨어진다.');
+    expect(cleanOcrText('東京 Tokyo 駅')).toBe('東京 Tokyo 駅');
+  });
+
   it('returns an empty string for whitespace', () => {
     expect(cleanOcrText(' \n\n ')).toBe('');
   });

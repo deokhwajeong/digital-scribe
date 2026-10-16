@@ -127,3 +127,18 @@ export const formatElapsed = (elapsedMs: number): string => {
   const seconds = totalSeconds % 60;
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 };
+
+/**
+ * Best-guess passage language, used to file finished sessions. Hangul means
+ * Korean; kana or kanji means Japanese; anything else is filed as English.
+ */
+export const languageOf = (text: string): 'en' | 'ko' | 'ja' => {
+  let hangul = 0;
+  let japanese = 0;
+  for (const char of toChars(text)) {
+    if (/\p{Script=Hangul}/u.test(char)) hangul++;
+    else if (/[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]/u.test(char)) japanese++;
+  }
+  if (hangul === 0 && japanese === 0) return 'en';
+  return hangul >= japanese ? 'ko' : 'ja';
+};

@@ -9,8 +9,7 @@ import { IS_DEMO } from '@/lib/demo';
 import { OCR_SAMPLE } from '@/data/ocr-sample';
 import { cleanOcrText } from '@/lib/text';
 import type { Locale } from '@/lib/i18n/config';
-
-type OcrLang = 'eng' | 'kor' | 'jpn' | 'eng+kor';
+import { ocrAssetPaths, type OcrLang } from '@/lib/ocr-assets';
 
 const LANG_FOR_LOCALE: Record<Locale, OcrLang> = { en: 'eng', ko: 'eng+kor', ja: 'jpn' };
 
@@ -65,16 +64,29 @@ export default function OCRUploader() {
     setPreview({ src: OCR_SAMPLE.imageSrc, isSample: true });
   };
 
+  // Worker, WASM core and language data are served from this site
+  // (public/tesseract, copied at build time), never from a third-party CDN.
   const recognizeWithTesseract = async (src: string): Promise<string> => {
-    const { default: Tesseract } = await import('tesseract.js');
-    const result = await Tesseract.recognize(src, selectedLang, {
+    const { createWorker } = await import('tesseract.js');
+    const paths = ocrAssetPaths(window.location.origin, process.env.NEXT_PUBLIC_BASE_PATH ?? '');
+    const worker = await createWorker(selectedLang, 1, {
+      ...paths,
+      workerBlobURL: false,
+      // Matches the full cores copied by scripts/copy-ocr-assets.mjs.
+      legacyCore: true,
       logger: (m) => {
         if (m.status === 'recognizing text') {
           setProgress(Math.round(m.progress * 100));
         }
       },
+      errorHandler: () => undefined,
     });
-    return result.data.text;
+    try {
+      const result = await worker.recognize(src);
+      return result.data.text;
+    } finally {
+      await worker.terminate();
+    }
   };
 
   // The demo ships a precomputed result for the bundled page so no OCR
@@ -128,9 +140,9 @@ export default function OCRUploader() {
         ref={fileInputRef}
         type="file"
         accept="image/*"
-        capture="environment"
         onChange={handleFileSelect}
         className="hidden"
+        data-testid="ocr-file"
       />
 
       {!preview ? (
@@ -174,9 +186,12 @@ export default function OCRUploader() {
           {preview.isSample && IS_DEMO ? (
             <p className="text-xs text-gray-500">{t('ocr.sampleHint')}</p>
           ) : (
+            <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">{t('ocr.language')}</span>
+              <label htmlFor="ocr-lang" className="text-sm text-gray-600">{t('ocr.language')}</label>
               <select
+                id="ocr-lang"
+                data-testid="ocr-lang"
                 value={selectedLang}
                 onChange={(e) => setSelectedLang(e.target.value as OcrLang)}
                 className="rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
@@ -187,6 +202,8 @@ export default function OCRUploader() {
                 <option value="jpn">{t('language.ja')}</option>
                 <option value="eng+kor">{t('ocr.bilingual')}</option>
               </select>
+            </div>
+            <p className="text-xs text-gray-500">{t('ocr.engineHint')}</p>
             </div>
           )}
 
@@ -220,8 +237,10 @@ export default function OCRUploader() {
         </div>
       )}
 
-      {notice && !error && <p className="text-sm text-emerald-600">{notice}</p>}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      <div aria-live="polite">
+        {notice && !error && <p className="text-sm text-emerald-700" data-testid="ocr-notice">{notice}</p>}
+        {error && <p className="text-sm text-red-700" role="alert">{error}</p>}
+      </div>
     </div>
   );
 }
