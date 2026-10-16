@@ -6,27 +6,31 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build:demo": "NEXT_PUBLIC_DEMO=1 next build",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run build"
   },
   "dependencies": {
-    "lucide-react": "^0.563.0",
-    "next": "16.1.6",
-    "next-intl": "^4.8.1",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
+    "lucide-react": "^1.58.0",
+    "next": "^16.4.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "read-excel-file": "^9.3.12",
     "tesseract.js": "^7.0.0",
-    "xlsx": "^0.18.5",
-    "zustand": "^5.0.11"
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.6",
-    "puppeteer": "^24.36.1",
+    "@types/node": "^22.20.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.2",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.5"
   }
 }

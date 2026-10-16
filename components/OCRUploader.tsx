@@ -1,46 +1,90 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { Camera, ImageIcon, X, Loader2 } from 'lucide-react';
+import { Camera, ImageIcon, X, Loader2, BookImage } from 'lucide-react';
 import { useTypingStore } from '@/lib/store/typing-store';
 import { useI18n } from '@/lib/i18n/use-i18n';
-import Tesseract from 'tesseract.js';
+import { IS_DEMO } from '@/lib/demo';
+import { OCR_SAMPLE } from '@/data/ocr-sample';
+import { cleanOcrText } from '@/lib/text';
+import type { Locale } from '@/lib/i18n/config';
+
+type OcrLang = 'eng' | 'kor' | 'jpn' | 'eng+kor';
+
+const LANG_FOR_LOCALE: Record<Locale, OcrLang> = { en: 'eng', ko: 'eng+kor', ja: 'jpn' };
+
+interface Preview {
+  src: string;
+  isSample: boolean;
+}
+
+const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
 export default function OCRUploader() {
-  const { setTargetText, reset } = useTypingStore();
-  const { t } = useI18n();
+  const { setTargetText } = useTypingStore();
+  const { t, locale } = useI18n();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [preview, setPreview] = useState<Preview | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [selectedLang, setSelectedLang] = useState<'eng' | 'kor' | 'eng+kor'>('eng+kor');
+  const [notice, setNotice] = useState<string | null>(null);
+  const [selectedLang, setSelectedLang] = useState<OcrLang>(LANG_FOR_LOCALE[locale]);
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Object URLs must be released or they leak for the lifetime of the page.
+  useEffect(() => {
+    return () => {
+      if (preview && !preview.isSample) URL.revokeObjectURL(preview.src);
+    };
+  }, [preview]);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setError(null);
+    setNotice(null);
 
-    // Check file type
     if (!file.type.startsWith('image/')) {
       setError(t('ocr.imageOnly'));
       return;
     }
-
-    // Check file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
       setError(t('ocr.maxSize'));
       return;
     }
 
-    // Create preview
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setPreview(e.target?.result as string);
-    };
-    reader.readAsDataURL(file);
+    setPreview({ src: URL.createObjectURL(file), isSample: false });
+  };
+
+  const loadSample = () => {
+    setError(null);
+    setNotice(null);
+    setSelectedLang(OCR_SAMPLE.language);
+    setPreview({ src: OCR_SAMPLE.imageSrc, isSample: true });
+  };
+
+  const recognizeWithTesseract = async (src: string): Promise<string> => {
+    const { default: Tesseract } = await import('tesseract.js');
+    const result = await Tesseract.recognize(src, selectedLang, {
+      logger: (m) => {
+        if (m.status === 'recognizing text') {
+          setProgress(Math.round(m.progress * 100));
+        }
+      },
+    });
+    return result.data.text;
+  };
+
+  // The demo ships a precomputed result for the bundled page so no OCR
+  // engine or language data has to be downloaded.
+  const recognizeSample = async (): Promise<string> => {
+    for (let step = 1; step <= 10; step++) {
+      await sleep(90);
+      setProgress(step * 10);
+    }
+    return OCR_SAMPLE.text;
   };
 
   const processOCR = async () => {
@@ -51,32 +95,16 @@ export default function OCRUploader() {
     setError(null);
 
     try {
-      const result = await Tesseract.recognize(
-        preview,
-        selectedLang,
-        {
-          logger: (m) => {
-            if (m.status === 'recognizing text') {
-              setProgress(Math.round(m.progress * 100));
-            }
-          },
-        }
-      );
+      const useSample = preview.isSample && IS_DEMO;
+      const raw = useSample ? await recognizeSample() : await recognizeWithTesseract(preview.src);
+      const cleanedText = cleanOcrText(raw);
 
-      const extractedText = result.data.text.trim();
-
-      if (!extractedText) {
+      if (!cleanedText) {
         throw new Error(t('ocr.notFound'));
       }
 
-      // Clean up the text
-      const cleanedText = extractedText
-        .replace(/\s+/g, ' ')
-        .replace(/\n\s*\n/g, '\n')
-        .trim();
-
-      reset();
       setTargetText(cleanedText);
+      setNotice(useSample ? t('ocr.sampleDone') : t('ocr.done'));
       clearPreview();
     } catch (err) {
       setError(err instanceof Error ? err.message : t('ocr.processError'));
@@ -106,20 +134,29 @@ export default function OCRUploader() {
       />
 
       {!preview ? (
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 px-4 py-4 text-gray-600 transition-colors hover:border-purple-400 hover:bg-purple-50 hover:text-purple-600"
-        >
-          <Camera className="h-5 w-5" />
-          <span className="text-sm font-medium">{t('ocr.uploadLabel')}</span>
-        </button>
+        <div className="grid gap-2 sm:grid-cols-2">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 px-4 py-4 text-gray-600 transition-colors hover:border-purple-400 hover:bg-purple-50 hover:text-purple-600"
+          >
+            <Camera className="h-5 w-5 shrink-0" />
+            <span className="text-sm font-medium">{t('ocr.uploadLabel')}</span>
+          </button>
+          <button
+            onClick={loadSample}
+            data-testid="ocr-sample"
+            className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-purple-200 bg-purple-50 px-4 py-4 text-purple-700 transition-colors hover:border-purple-400 hover:bg-purple-100"
+          >
+            <BookImage className="h-5 w-5 shrink-0" />
+            <span className="text-sm font-medium">{t('ocr.sample')}</span>
+          </button>
+        </div>
       ) : (
         <div className="space-y-3">
-          {/* Image Preview */}
-          <div className="relative h-64 rounded-lg border border-gray-200 overflow-hidden bg-gray-100">
+          <div className="relative h-64 overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
             <Image
-              src={preview}
-              alt={t('ocr.previewAlt')}
+              src={preview.src}
+              alt={preview.isSample ? OCR_SAMPLE.title : t('ocr.previewAlt')}
               fill
               unoptimized
               className="object-contain"
@@ -127,47 +164,46 @@ export default function OCRUploader() {
             />
             <button
               onClick={clearPreview}
-              className="absolute top-2 right-2 rounded-full bg-black/50 p-1.5 text-white hover:bg-black/70 transition-colors"
+              aria-label={t('ocr.clear')}
+              className="absolute right-2 top-2 rounded-full bg-black/50 p-1.5 text-white transition-colors hover:bg-black/70"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
 
-          {/* Language Selection */}
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">{t('ocr.language')}</span>
-            <select
-              value={selectedLang}
-              onChange={(e) => setSelectedLang(e.target.value as typeof selectedLang)}
-              className="rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-              disabled={isProcessing}
-            >
-              <option value="eng">{t('language.en')}</option>
-              <option value="kor">{t('language.ko')}</option>
-              <option value="eng+kor">{t('ocr.bilingual')}</option>
-            </select>
-          </div>
-
-          {/* Progress Bar */}
-          {isProcessing && (
-            <div className="space-y-1">
-              <div className="h-2 w-full rounded-full bg-gray-200 overflow-hidden">
-                <div
-                  className="h-full bg-purple-500 transition-all duration-300"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-              <p className="text-center text-sm text-gray-500">
-                {t('ocr.recognizing', { progress })}
-              </p>
+          {preview.isSample && IS_DEMO ? (
+            <p className="text-xs text-gray-500">{t('ocr.sampleHint')}</p>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">{t('ocr.language')}</span>
+              <select
+                value={selectedLang}
+                onChange={(e) => setSelectedLang(e.target.value as OcrLang)}
+                className="rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                disabled={isProcessing}
+              >
+                <option value="eng">{t('language.en')}</option>
+                <option value="kor">{t('language.ko')}</option>
+                <option value="jpn">{t('language.ja')}</option>
+                <option value="eng+kor">{t('ocr.bilingual')}</option>
+              </select>
             </div>
           )}
 
-          {/* Process Button */}
+          {isProcessing && (
+            <div className="space-y-1">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                <div className="h-full bg-purple-500 transition-all duration-300" style={{ width: `${progress}%` }} />
+              </div>
+              <p className="text-center text-sm text-gray-500">{t('ocr.recognizing', { progress })}</p>
+            </div>
+          )}
+
           <button
             onClick={processOCR}
             disabled={isProcessing}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-purple-600 px-4 py-3 text-white font-medium transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+            data-testid="ocr-extract"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-purple-600 px-4 py-3 font-medium text-white transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isProcessing ? (
               <>
@@ -184,9 +220,8 @@ export default function OCRUploader() {
         </div>
       )}
 
-      {error && (
-        <p className="text-sm text-red-600">{error}</p>
-      )}
+      {notice && !error && <p className="text-sm text-emerald-600">{notice}</p>}
+      {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );
 }

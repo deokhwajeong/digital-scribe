@@ -1,18 +1,16 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTypingStore } from '@/lib/store/typing-store';
 import { Keyboard, Eye, EyeOff } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/use-i18n';
+import { toChars } from '@/lib/metrics';
 
 export default function TypingEngine() {
   const { t } = useI18n();
-  const {
-    userInput,
-    targetText,
-    setUserInput,
-    startTyping,
-  } = useTypingStore();
+  const { userInput, targetText, composing, endTime, setUserInput } = useTypingStore();
+  const targetChars = useMemo(() => toChars(targetText), [targetText]);
+  const typedChars = useMemo(() => toChars(userInput), [userInput]);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -21,8 +19,8 @@ export default function TypingEngine() {
   const [showFullText, setShowFullText] = useState(false);
 
   useEffect(() => {
-    // Focus on mount
-    inputRef.current?.focus();
+    // Focus on mount without jumping the page down to the typing area.
+    inputRef.current?.focus({ preventScroll: true });
   }, []);
 
   // Auto-scroll to cursor position
@@ -40,28 +38,24 @@ export default function TypingEngine() {
         container.scrollTop -= containerRect.top - cursorRect.top + 40;
       }
     }
-  }, [userInput.length]);
+  }, [typedChars.length]);
 
-  const applyInput = (rawInput: string) => {
-    const nextInput = rawInput.slice(0, targetText.length);
-    setUserInput(nextInput);
+  // IME composition (Korean, Japanese) fires change events with partial
+  // characters. They are tracked as "composing" so the last character shows
+  // as pending instead of a typo until the syllable or kana is committed.
+  const composingRef = useRef(false);
 
-    // Start timer once when typing begins
-    if (userInput.length === 0 && nextInput.length > 0) {
-      startTyping();
-    }
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setUserInput(e.currentTarget.value, composingRef.current);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    applyInput(e.currentTarget.value);
-  };
-
-  const handleInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
-    applyInput(e.currentTarget.value);
+  const handleCompositionStart = () => {
+    composingRef.current = true;
   };
 
   const handleCompositionEnd = (e: React.CompositionEvent<HTMLTextAreaElement>) => {
-    applyInput(e.currentTarget.value);
+    composingRef.current = false;
+    setUserInput(e.currentTarget.value, false);
   };
 
   const focusInput = () => {
@@ -69,21 +63,25 @@ export default function TypingEngine() {
   };
 
   const getCharacterClassName = (index: number): string => {
-    const baseClass = 'inline-block transition-all duration-100';
+    const baseClass = 'transition-colors duration-100';
     
-    if (index >= userInput.length) {
+    if (index >= typedChars.length) {
       return `${baseClass} text-gray-400`; // Not yet typed
     }
-    
-    if (userInput[index] === targetText[index]) {
+
+    if (typedChars[index] === targetChars[index]) {
       return `${baseClass} text-emerald-600 bg-emerald-50 rounded-sm`; // Correct
     }
     
+    if (composing && index === typedChars.length - 1) {
+      return `${baseClass} text-blue-600 bg-blue-50 rounded-sm underline decoration-blue-400 decoration-2`; // IME composing
+    }
+
     return `${baseClass} text-red-500 bg-red-100 rounded-sm underline decoration-red-400 decoration-2`; // Incorrect
   };
 
-  const isCompleted = userInput.length === targetText.length && targetText.length > 0;
-  const progressPercent = targetText.length > 0 ? (userInput.length / targetText.length) * 100 : 0;
+  const isCompleted = endTime !== null;
+  const progressPercent = targetChars.length > 0 ? (typedChars.length / targetChars.length) * 100 : 0;
 
   // Split text into lines for better display
   const renderText = () => {
@@ -98,9 +96,9 @@ export default function TypingEngine() {
     }
 
     return (
-      <div className="font-mono text-lg leading-[2] tracking-wide whitespace-pre-wrap break-all">
-        {targetText.split('').map((char, index) => {
-          const isCursor = index === userInput.length;
+      <div className="font-mono text-lg leading-[2] tracking-wide whitespace-pre-wrap break-words">
+        {targetChars.map((char, index) => {
+          const isCursor = index === typedChars.length;
           return (
             <span
               key={index}
@@ -109,7 +107,7 @@ export default function TypingEngine() {
                 isCursor && isFocused ? 'ring-2 ring-blue-500 ring-offset-1' : ''
               }`}
             >
-              {char === ' ' ? '\u00A0' : char === '\n' ? '↵\n' : char}
+              {char === '\n' ? '↵\n' : char}
             </span>
           );
         })}
@@ -125,7 +123,7 @@ export default function TypingEngine() {
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-500">{t('typing.progress')}</span>
             <span className="font-medium text-gray-700">
-              {t('typing.chars', { typed: userInput.length, total: targetText.length })}
+              {t('typing.chars', { typed: typedChars.length, total: targetChars.length })}
             </span>
           </div>
           <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
@@ -169,8 +167,8 @@ export default function TypingEngine() {
         <textarea
           ref={inputRef}
           value={userInput}
-          onChange={handleInputChange}
-          onInput={handleInput}
+          onChange={handleChange}
+          onCompositionStart={handleCompositionStart}
           onCompositionEnd={handleCompositionEnd}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
@@ -182,11 +180,12 @@ export default function TypingEngine() {
           autoCapitalize="off"
           disabled={!targetText || isCompleted}
           aria-label={t('typing.ariaInput')}
+          data-testid="typing-input"
         />
       </div>
 
       {/* Show more/less toggle for long texts */}
-      {targetText && targetText.length > 500 && (
+      {targetChars.length > 500 && (
         <button
           onClick={() => setShowFullText(!showFullText)}
           className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition-colors mx-auto"
@@ -209,7 +208,7 @@ export default function TypingEngine() {
       <div className="text-center text-sm">
         {!targetText ? (
           <span className="text-gray-400">{t('typing.instructionSelect')}</span>
-        ) : userInput.length === 0 ? (
+        ) : typedChars.length === 0 ? (
           <span className="text-blue-500 animate-pulse">
             👆 {t('typing.instructionStart')}
           </span>

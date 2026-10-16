@@ -4,49 +4,27 @@ import { useRef, useState } from 'react';
 import { Upload, FileText, X, FileSpreadsheet } from 'lucide-react';
 import { useTypingStore } from '@/lib/store/typing-store';
 import { useI18n } from '@/lib/i18n/use-i18n';
-import * as XLSX from 'xlsx';
+import { cleanFileText, parseCsv, rowsToText } from '@/lib/text';
 
 export default function FileUploader() {
-  const { setTargetText, reset } = useTypingStore();
+  const { setTargetText } = useTypingStore();
   const { t } = useI18n();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const parseExcelFile = async (file: File): Promise<string> => {
-    const arrayBuffer = await file.arrayBuffer();
-    const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-    
-    // Get all sheet names
-    const sheetNames = workbook.SheetNames;
-    
-    // Extract text from all sheets
-    const allText: string[] = [];
-    
-    for (const sheetName of sheetNames) {
-      const worksheet = workbook.Sheets[sheetName];
-      
-      // Convert to array of arrays
-      const data = XLSX.utils.sheet_to_json<string[]>(worksheet, { header: 1 });
-      
-      // Filter out empty rows and join cells
-      const sheetText = data
-        .filter((row: string[]) => row && row.length > 0)
-        .map((row: string[]) => 
-          row
-            .filter(cell => cell !== null && cell !== undefined && cell !== '')
-            .join(' ')
-        )
-        .filter(line => line.trim() !== '')
-        .join('\n');
-      
-      if (sheetText) {
-        allText.push(sheetText);
-      }
+  const parseSpreadsheet = async (file: File, isCsv: boolean): Promise<string> => {
+    if (isCsv) {
+      return rowsToText(parseCsv(await file.text()));
     }
-    
-    return allText.join('\n\n');
+    // Loaded on demand so the parser is not part of the initial bundle.
+    const { default: readXlsxFile } = await import('read-excel-file/browser');
+    const sheets = await readXlsxFile(file);
+    return sheets
+      .map((sheet) => rowsToText(sheet.data))
+      .filter(Boolean)
+      .join('\n\n');
   };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,12 +38,9 @@ export default function FileUploader() {
       // Check file type
       const textTypes = ['text/plain', 'text/markdown', 'application/json'];
       const textExtensions = ['.txt', '.md', '.json'];
-      const excelExtensions = ['.xlsx', '.xls', '.csv'];
-      const excelTypes = [
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'application/vnd.ms-excel',
-        'text/csv'
-      ];
+      const excelExtensions = ['.xlsx', '.csv'];
+      const excelTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv'];
+      const isCsv = file.type === 'text/csv' || file.name.toLowerCase().endsWith('.csv');
       
       const isTextFile = textTypes.includes(file.type) || 
         textExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
@@ -86,22 +61,18 @@ export default function FileUploader() {
       let text: string;
       
       if (isExcelFile) {
-        text = await parseExcelFile(file);
+        text = await parseSpreadsheet(file, isCsv);
       } else {
         text = await file.text();
       }
       
       // Clean up the text
-      const cleanedText = text
-        .replace(/\r\n/g, '\n')
-        .replace(/\r/g, '\n')
-        .trim();
+      const cleanedText = cleanFileText(text);
 
       if (!cleanedText) {
         throw new Error(t('fileUploader.empty'));
       }
 
-      reset();
       setTargetText(cleanedText);
       setFileName(file.name);
     } catch (err) {
@@ -120,14 +91,14 @@ export default function FileUploader() {
     setError(null);
   };
 
-  const isExcel = fileName?.match(/\.(xlsx|xls|csv)$/i);
+  const isExcel = fileName?.match(/\.(xlsx|csv)$/i);
 
   return (
     <div className="w-full">
       <input
         ref={fileInputRef}
         type="file"
-        accept=".txt,.md,.json,.xlsx,.xls,.csv,text/plain,text/markdown,application/json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
+        accept=".txt,.md,.json,.xlsx,.csv,text/plain,text/markdown,application/json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv"
         onChange={handleFileSelect}
         className="hidden"
       />
@@ -144,6 +115,7 @@ export default function FileUploader() {
           </div>
           <button
             onClick={clearFile}
+            aria-label={t('fileUploader.clear')}
             className="rounded-full p-1 text-green-600 hover:bg-green-100 transition-colors"
           >
             <X className="h-4 w-4" />

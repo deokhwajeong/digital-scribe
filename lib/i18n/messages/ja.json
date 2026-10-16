@@ -19,7 +19,9 @@
     "progress": "進行率",
     "progressDesc": "{typed}/{total} 文字",
     "time": "時間",
-    "timeDesc": "経過時間"
+    "timeDesc": "経過時間",
+    "cpm": "CPM",
+    "cpmDesc": "1分あたりの文字数"
   },
   "source": {
     "title": "テキストソースを選択",
@@ -46,12 +48,13 @@
     "instructionTyping": "入力中..."
   },
   "fileUploader": {
-    "unsupported": "未対応のファイル形式です。(.txt, .md, .xlsx, .xls, .csv のみ)",
+    "unsupported": "対応していないファイル形式です。(.txt, .md, .json, .xlsx, .csv のみ)",
     "maxSize": "ファイルサイズは {size} 以下にしてください。",
     "empty": "ファイルが空です。",
     "readError": "ファイルの読み込み中にエラーが発生しました。",
     "loading": "ファイルを読み込み中...",
-    "uploadLabel": "ファイルアップロード (.txt, .md, .xlsx, .csv)"
+    "uploadLabel": "ファイルアップロード (.txt, .md, .xlsx, .csv)",
+    "clear": "ファイルをクリア"
   },
   "ocr": {
     "imageOnly": "画像ファイルのみアップロードできます。",
@@ -64,7 +67,12 @@
     "bilingual": "英語 + 韓国語",
     "recognizing": "テキスト認識中... {progress}%",
     "processing": "処理中...",
-    "extract": "テキストを抽出"
+    "extract": "テキストを抽出",
+    "sample": "サンプルの本のページで試す",
+    "sampleHint": "デモ: 同梱ページは事前計算済みのOCR結果を使うため、アップロードやダウンロードは発生しません。",
+    "sampleDone": "サンプルページを認識しました (事前計算済み)。下で入力を始めましょう。",
+    "done": "テキストを抽出しました。下で入力を始めましょう。",
+    "clear": "画像を削除"
   },
   "reset": {
     "button": "リセット"
@@ -85,5 +93,8 @@
     "cleared": "正解単語: {count}",
     "bonus": "ボーナス: 連続 {count}",
     "result": "ゲーム終了! 合計 {score} 点"
+  },
+  "demo": {
+    "banner": "デモモード: サンプル文章、ブラウザ内で動作します"
   }
 }

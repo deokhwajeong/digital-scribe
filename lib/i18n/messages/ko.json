@@ -19,7 +19,9 @@
     "progress": "진행률",
     "progressDesc": "{typed}/{total}자",
     "time": "시간",
-    "timeDesc": "경과 시간"
+    "timeDesc": "경과 시간",
+    "cpm": "CPM",
+    "cpmDesc": "분당 글자 수"
   },
   "source": {
     "title": "텍스트 소스 선택",
@@ -46,12 +48,13 @@
     "instructionTyping": "타이핑 중..."
   },
   "fileUploader": {
-    "unsupported": "지원하지 않는 파일 형식입니다. (.txt, .md, .xlsx, .xls, .csv 파일만 가능)",
+    "unsupported": "지원하지 않는 파일 형식입니다. (.txt, .md, .json, .xlsx, .csv 파일만 가능)",
     "maxSize": "파일 크기는 {size} 이하여야 합니다.",
     "empty": "파일이 비어 있습니다.",
     "readError": "파일을 읽는 중 오류가 발생했습니다.",
     "loading": "파일 읽는 중...",
-    "uploadLabel": "파일 업로드 (.txt, .md, .xlsx, .csv)"
+    "uploadLabel": "파일 업로드 (.txt, .md, .xlsx, .csv)",
+    "clear": "파일 지우기"
   },
   "ocr": {
     "imageOnly": "이미지 파일만 업로드 가능합니다.",
@@ -64,7 +67,12 @@
     "bilingual": "영어 + 한국어",
     "recognizing": "텍스트 인식 중... {progress}%",
     "processing": "처리 중...",
-    "extract": "텍스트 추출하기"
+    "extract": "텍스트 추출하기",
+    "sample": "샘플 책 페이지로 체험하기",
+    "sampleHint": "데모: 내장된 페이지는 미리 계산된 OCR 결과를 사용하므로 업로드나 다운로드가 없습니다.",
+    "sampleDone": "샘플 페이지 인식 완료 (미리 계산된 결과). 아래에서 타이핑을 시작하세요.",
+    "done": "텍스트 추출 완료. 아래에서 타이핑을 시작하세요.",
+    "clear": "이미지 제거"
   },
   "reset": {
     "button": "리셋"
@@ -85,5 +93,8 @@
     "cleared": "맞힌 단어: {count}",
     "bonus": "보너스: 연속 {count}",
     "result": "게임 종료! 총 점수 {score}점"
+  },
+  "demo": {
+    "banner": "데모 모드: 샘플 문장, 브라우저에서만 실행됩니다"
   }
 }

@@ -19,7 +19,9 @@
     "progress": "Progress",
     "progressDesc": "{typed}/{total} chars",
     "time": "Time",
-    "timeDesc": "Elapsed"
+    "timeDesc": "Elapsed",
+    "cpm": "CPM",
+    "cpmDesc": "Characters per minute"
   },
   "source": {
     "title": "Choose Text Source",
@@ -46,12 +48,13 @@
     "instructionTyping": "Typing..."
   },
   "fileUploader": {
-    "unsupported": "Unsupported file format. Only .txt, .md, .xlsx, .xls, and .csv are allowed.",
+    "unsupported": "Unsupported file format. Only .txt, .md, .json, .xlsx, and .csv are allowed.",
     "maxSize": "File size must be {size} or less.",
     "empty": "The file is empty.",
     "readError": "An error occurred while reading the file.",
     "loading": "Reading file...",
-    "uploadLabel": "Upload file (.txt, .md, .xlsx, .csv)"
+    "uploadLabel": "Upload file (.txt, .md, .xlsx, .csv)",
+    "clear": "Clear file"
   },
   "ocr": {
     "imageOnly": "Only image files can be uploaded.",
@@ -64,7 +67,12 @@
     "bilingual": "English + Korean",
     "recognizing": "Recognizing text... {progress}%",
     "processing": "Processing...",
-    "extract": "Extract Text"
+    "extract": "Extract Text",
+    "sample": "Try the sample book page",
+    "sampleHint": "Demo: this bundled page uses a precomputed OCR result, so nothing is uploaded or downloaded.",
+    "sampleDone": "Sample page recognized (precomputed result). Start typing below.",
+    "done": "Text extracted. Start typing below.",
+    "clear": "Remove image"
   },
   "reset": {
     "button": "Reset"
@@ -85,5 +93,8 @@
     "cleared": "Words cleared: {count}",
     "bonus": "Bonus: streak {count}",
     "result": "Game over! Total score {score}"
+  },
+  "demo": {
+    "banner": "Demo mode: sample passages, runs in your browser"
   }
 }

@@ -1,123 +1,80 @@
 import { create } from 'zustand';
+import { texts } from '@/data/texts';
+import { defaultLocale } from '@/lib/i18n/config';
+import {
+  clampToTarget,
+  computeMetrics,
+  isComplete,
+  normalize,
+  speedUnitFor,
+  type SpeedUnit,
+} from '@/lib/metrics';
 
 export interface TypingState {
-  // Current input from user
   userInput: string;
-  
-  // Target text to type
   targetText: string;
-  
-  // Typing statistics
+  speedUnit: SpeedUnit;
+  /** True while an IME (Korean, Japanese) is composing the last character. */
+  composing: boolean;
+
   startTime: number | null;
-  wpm: number;
+  endTime: number | null;
   accuracy: number;
-  
-  // Character-level tracking
+
   correctChars: number;
   incorrectChars: number;
   totalChars: number;
-  
-  // Actions
-  setUserInput: (input: string) => void;
+
+  setUserInput: (input: string, composing?: boolean) => void;
   setTargetText: (text: string) => void;
-  startTyping: () => void;
   reset: () => void;
-  calculateMetrics: () => void;
 }
 
-export const useTypingStore = create<TypingState>((set, get) => ({
+const initialText = texts.find((item) => item.language === defaultLocale)?.content ?? '';
+
+const emptyProgress = {
   userInput: '',
-  targetText: '',
+  composing: false,
   startTime: null,
-  wpm: 0,
+  endTime: null,
   accuracy: 100,
   correctChars: 0,
   incorrectChars: 0,
   totalChars: 0,
+};
 
-  setUserInput: (input: string) => {
-    // Normalize to NFC to ensure consistent character comparison
-    set({ userInput: input.normalize('NFC') });
-    get().calculateMetrics();
-  },
+export const useTypingStore = create<TypingState>((set, get) => ({
+  ...emptyProgress,
+  targetText: normalize(initialText),
+  speedUnit: speedUnitFor(initialText),
 
-  setTargetText: (text: string) => {
-    // Normalize to NFC to ensure consistent character comparison
-    // This is important for Korean text which can be stored in NFD or NFC form
-    set({ targetText: text.normalize('NFC') });
-  },
+  setUserInput: (rawInput, composing = false) => {
+    const { targetText, startTime, endTime } = get();
+    if (!targetText || endTime) return;
 
-  startTyping: () => {
-    if (!get().startTime) {
-      set({ startTime: Date.now() });
-    }
-  },
+    const userInput = clampToTarget(rawInput, targetText);
+    const metrics = computeMetrics(userInput, targetText, composing);
+    const now = Date.now();
+    const started = startTime ?? (userInput.length > 0 ? now : null);
 
-  reset: () => {
     set({
-      userInput: '',
-      startTime: null,
-      wpm: 0,
-      accuracy: 100,
-      correctChars: 0,
-      incorrectChars: 0,
-      totalChars: 0,
+      userInput,
+      composing,
+      startTime: started,
+      endTime: isComplete(userInput, targetText, composing) ? now : null,
+      accuracy: metrics.accuracy,
+      correctChars: metrics.correct,
+      incorrectChars: metrics.incorrect,
+      totalChars: metrics.total,
     });
   },
 
-  // Calculate WPM and accuracy metrics
-  // WPM is calculated using the standard assumption of 5 characters per word
-  calculateMetrics: () => {
-    const { userInput, targetText, startTime } = get();
-    
-    if (!targetText) {
-      return;
-    }
-
-    // Reset metrics if input is empty
-    if (!userInput) {
-      set({
-        correctChars: 0,
-        incorrectChars: 0,
-        totalChars: 0,
-        accuracy: 100,
-        wpm: 0,
-      });
-      return;
-    }
-
-    // Calculate accuracy
-    let correct = 0;
-    let incorrect = 0;
-    
-    for (let i = 0; i < userInput.length; i++) {
-      if (userInput[i] === targetText[i]) {
-        correct++;
-      } else {
-        incorrect++;
-      }
-    }
-
-    const total = userInput.length;
-    const accuracy = total > 0 ? (correct / total) * 100 : 100;
-
-    // Calculate WPM (Words Per Minute)
-    // Using standard assumption: 1 word = 5 characters
-    let wpm = 0;
-    if (startTime) {
-      const timeElapsed = (Date.now() - startTime) / 1000 / 60; // in minutes
-      if (timeElapsed > 0) {
-        const words = correct / 5; // Standard: 5 characters per word
-        wpm = Math.round(words / timeElapsed);
-      }
-    }
-
-    set({
-      correctChars: correct,
-      incorrectChars: incorrect,
-      totalChars: total,
-      accuracy: Math.round(accuracy),
-      wpm,
-    });
+  // Choosing a new passage always starts a fresh run; otherwise the old
+  // input would be scored against the new text.
+  setTargetText: (text) => {
+    const targetText = normalize(text);
+    set({ ...emptyProgress, targetText, speedUnit: speedUnitFor(targetText) });
   },
+
+  reset: () => set({ ...emptyProgress }),
 }));
